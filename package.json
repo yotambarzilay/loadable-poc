@@ -5,6 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "start:host": "yarn --cwd packages/host start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": {
