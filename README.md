@@ -13,11 +13,11 @@
 
 Monorepo that contains 2 packages:
 
-### `host`
+#### `host`
 Mimics thunderbolt. it renders the app, handles SSR, and integrates FOUC for all other GA-ables. It also has its own components,
 all of which are dynamically loaded according to what is needed in the site (for this POC, all components are always loaded)
 
-### `comps-lib`
+#### `comps-lib`
 Mimics editor-elements. exports component loaders to be dynamically loaded by the host as needed
 
 ## `@loadable` integration
@@ -39,7 +39,7 @@ Components that wish to split their logic into dynamically-loaded components can
 
 ### Render-time
 
-### SSR
+#### SSR
 - requires the **client's** `loadable-stats.json` and creates a `ChunksExtractor`
 
 - Wraps the rendered `<App />` with a provider, to which loadable components will report to when they will be rendered to string
@@ -49,7 +49,7 @@ The script tags also contain some serialized `@loadable` information, that will 
 
 > See [packages/host/src/server.js](packages/host/src/server.js)
 
-### Client-side
+#### Client-side
 - Before hydration, `@loadable`'s `loadableReady` method is called, which makes sure that all all components that were rendered in SSR are loaded in the client before hydration
 
 > See [packages/host/src/client.js](packages/host/src/client.js)
