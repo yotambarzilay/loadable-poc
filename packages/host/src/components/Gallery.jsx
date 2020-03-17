@@ -15,8 +15,8 @@ const style = {
 const Gallery = ({imgs}) => {
     return <ul style={style}>
         {imgs.map(img => (
-            <li>
-                <Image img={img} key={img}/>
+            <li key={img}>
+                <Image img={img} />
             </li>
         ))}
     </ul>
