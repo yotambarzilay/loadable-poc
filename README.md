@@ -25,7 +25,7 @@ Mimics editor-elements. exports component loaders to be dynamically loaded by th
 ### Dev-time
 
 Component entries expose a `@loadable` component instead of a function that dynamically imports the chunk.
-This will allow "public components" (e.g. components whose componentType is saved in the page json in the editor).
+This will allow "public components" (e.g. components whose componentType is saved in the page json in the editor) to be preloaded both before hydration, but also before client-side "second" navigation.
 > See [packages/host/src/components/loader.js](packages/host/src/components/loader.js)
 
 Components that wish to split their logic into dynamically-loaded components can create additional `@loadable` components
