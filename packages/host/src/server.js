@@ -15,13 +15,5 @@ export const render = async ({ extractor }) => {
   );
   const content = ReactDOMServer.renderToString(jsx);
 
-  /*
-    Get all component script tags with async attribute.
-    In addition, there will be a script tag with @loadable's
-    serialized information needed by the client hydration process
-    to preload used components
-  */
-
-
   return { content };
 };

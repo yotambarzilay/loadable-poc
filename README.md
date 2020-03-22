@@ -11,14 +11,28 @@
 
 ## POC Setup
 
-Monorepo that contains 2 packages:
+A monorepo that contains 2 packages, that serve as 2 separate component sources, each with its own webpack bundle
 
 #### `host`
 Mimics thunderbolt. it renders the app, handles SSR, and integrates FOUC for all other GA-ables. It also has its own components,
-all of which are dynamically loaded according to what is needed in the site (for this POC, all components are always loaded)
+all of which are dynamically loaded according to what is needed in the site (for this POC, all components are always loaded).
+It requires the `dist` output of `comps-lib`
 
 #### `comps-lib`
-Mimics editor-elements. exports component loaders to be dynamically loaded by the host as needed
+Mimics editor-elements. exports component loaders to be dynamically loaded by the host.
+
+## Installing + Running the POC
+```zsh
+ $ yarn install
+ $ cd packages/comps-lib && yarn start
+ $ cd packages/host && yarn start
+```
+
+This will:
+1. Compile comps-lib into server & client libraries, and start a static server on `localhost:4000`
+2. Compile host into server & client apps, and start the SSR server on `localhost:3000`
+
+Navigate to http://localhost:3000 to view the "site".
 
 ## `@loadable` integration
 
@@ -37,19 +51,30 @@ Components that wish to split their logic into dynamically-loaded components can
 
 `@loadable`'s `webpack` plugin generate a loadable-stats.json
 
-### Render-time
+### Render-time (request time)
 
-#### SSR
-- requires the **client's** `loadable-stats.json` and creates a `ChunksExtractor`
+#### `host` SSR
+- requires the host's and the comps-lib's **client** `loadable-stats.json` files and creates a `ChunksExtractor` for each of them. Then, creates a ChunksExtractor wrapper that wraps both Extractors into one.
+> See [packages/host/app.js#L11-L27](packages/host/app.js#L11-L27)
 
 - Wraps the rendered `<App />` with a provider, to which loadable components will report to when they will be rendered to string
 
-- After `ReactDOMServer.renderToString()`, uses the ChunksExtractor to collect link tags and script tags of the rendered component's client chunks.
-The script tags also contain some serialized `@loadable` information, that will be used before hydration in the client
+    - The provider uses a `ChunksExtractor` wrapper, that distributes each collected chunk to the correct extractor (`host` components chunks to the `host`'s `ChunksExtractor`, `comps-lib` components chunks to the `comps-lib` 's `ChunkExtractor`)
+> See [packages/host/src/server.js#L12](packages/host/app.js#L12)
 
-> See [packages/host/src/server.js](packages/host/src/server.js)
+- `ReactDOM.renderToString()` is called, and outputs html that contains the render result of all dynamically imported loadable components
+
+- After `renderToString()`, the host's and comps-lib's `ChunksExtractor`s are used to get all relevant script tags for the rendered components.
+
+> See [packages/host/app.js#L42](packages/host/app.js#L42)
+
+- The script tags also contain some serialized `@loadable` information, that will be used before hydration in the client.
+Since we have 2 separate extractors, each extractor has its own serialized data. This requires separate `namespaces` to be used.
+> See [packages/host/app.js#L19](packages/host/app.js#L19)
+
+
 
 #### Client-side
 - Before hydration, `@loadable`'s `loadableReady` method is called, which makes sure that all all components that were rendered in SSR are loaded in the client before hydration
-
-> See [packages/host/src/client.js](packages/host/src/client.js)
+    - loadableReady is called once per library, with the relevant namespace that was previously defined for `comps-lib`
+> See [packages/host/src/client.js#L15](packages/host/src/client.js#L15)
