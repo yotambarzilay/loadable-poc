@@ -77,4 +77,4 @@ Since we have 2 separate extractors, each extractor has its own serialized data.
 #### Client-side
 - Before hydration, `@loadable`'s `loadableReady` method is called, which waits for all components that were rendered in SSR to load in the browser before React hydration.
     - `loadableReady` is called once per library, with the relevant `namespace` option
-> See [packages/host/src/client.js#L15](packages/host/src/client.js#L15)
+> See [packages/host/src/client.js#L15-L18](packages/host/src/client.js#L15-L18)
