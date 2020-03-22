@@ -1,4 +1,3 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
 const LoadablePlugin = require("@loadable/webpack-plugin");
 const nodeExternals = require("webpack-node-externals");
 const path = require("path");
@@ -14,7 +13,7 @@ const getConfig = target => ({
   mode: development ? "development" : "production",
   target: target === 'client' ? 'web' : 'node',
   entry: {
-    [target === "client" ? "main" : target]: `./src/${target}.js`
+    [target]: `./src/index.js`
   },
   module: {
     rules: [
@@ -27,24 +26,17 @@ const getConfig = target => ({
             caller: { target }
           }
         }
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: "html-loader"
-          }
-        ]
       }
     ]
   },
   externals:
-    target === "server" ? ["@loadable/component", nodeExternals()] : [{'comps-lib': 'compsLib'}],
+    target === "server" ? ["@loadable/component", nodeExternals()] : undefined,
   output: {
     path: path.join(DIST_PATH, target),
     filename: "[name].js",
-    publicPath: `/dist/${target}/`,
-    libraryTarget: target === "server" ? "commonjs2" : undefined
+    publicPath: `http://localhost:4000/`,
+    library: 'compsLib',
+    libraryTarget: 'umd'
   },
   plugins: [
     /*
@@ -53,14 +45,9 @@ const getConfig = target => ({
       it can be used instead.
       See: https://loadable-components.com/docs/server-side-rendering/#using-your-own-stats-file
     */
-    new LoadablePlugin(),
-    new HtmlWebPackPlugin({
-      template: "./src/index.ejs",
-      filename: "./index.ejs",
-      inject: false
-    })
+    new LoadablePlugin()
   ]
 });
 
-module.exports = [getConfig("client"), getConfig("server")];
+module.exports = [getConfig('client'), getConfig('server')]
 

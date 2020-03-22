@@ -4,17 +4,18 @@ import App from "./components/App";
 import { loadComps } from "./loadComps";
 import { loadableReady } from '@loadable/component'
 
+const promisifyLoadable = (namespace) => new Promise(resolve => {
+  loadableReady(resolve, {namespace})
+})
 
 const run = async () => {
   await new Promise(resolve => setTimeout(resolve, 1000));
   const comps = await loadComps();
   const container = document.getElementById("container");
 
-  console.timeLog('before ready')
-  loadableReady(() => {
-    console.timeLog('ready')
-    ReactDom.hydrate(<App comps={comps} />, container);
-  })
+  await Promise.all([promisifyLoadable(), promisifyLoadable('compsLib')])
+
+  ReactDom.hydrate(<App comps={comps} />, container);
 
 
 };
