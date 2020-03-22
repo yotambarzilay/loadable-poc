@@ -1,5 +1,5 @@
 import React from 'react'
 
-const WRichText = () => <div>Rich Text Comp</div>
+const WRichText = () => <div>comps-lib/WRichText.jsx</div>
 
 export default WRichText

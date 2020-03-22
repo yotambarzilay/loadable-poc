@@ -1,17 +1,15 @@
-import * as React from 'react'
-
-const imgs = ['Dynamic 1', 'Dynamic 2']
+import * as React from "react";
 
 const App = ({ comps }) => {
-    const { Button, Gallery, WRichText } = comps
-    return (
-        <div>
-            <h1>App.tsx</h1>
-            <Button label="shoa" />
-            <Gallery imgs={imgs} />
-            <WRichText />
-        </div>
-    );
-}
+  const elements = Object.entries(comps).map(([compType, Comp]) => (
+    <Comp key={compType} />
+  ));
+  return (
+    <div>
+      <h1>App.tsx</h1>
+      {elements}
+    </div>
+  );
+};
 
-export default App
+export default App;
