@@ -60,7 +60,7 @@ Components that wish to split their logic into dynamically-loaded components can
 - Wraps the rendered `<App />` with a provider, to which loadable components will report to when they will be rendered to string
 
     - The provider uses a `ChunksExtractor` wrapper, that distributes each collected chunk to the correct extractor (`host` components chunks to the `host`'s `ChunksExtractor`, `comps-lib` components chunks to the `comps-lib` 's `ChunkExtractor`)
-> See [packages/host/src/server.js#L12](packages/host/app.js#L12)
+> See [packages/host/src/server.js#L12-L14](packages/host/src/server.js#L12-L14)
 
 - `ReactDOM.renderToString()` is called, and outputs html that contains the render result of all dynamically imported loadable components
 
@@ -68,13 +68,13 @@ Components that wish to split their logic into dynamically-loaded components can
 
 > See [packages/host/app.js#L42](packages/host/app.js#L42)
 
-- The script tags also contain some serialized `@loadable` information, that will be used before hydration in the client.
+- The script tags also contain some serialized `@loadable` information, that will be used before hydration in the client (see client-side section below).
 Since we have 2 separate extractors, each extractor has its own serialized data. This requires separate `namespaces` to be used.
 > See [packages/host/app.js#L19](packages/host/app.js#L19)
 
 
 
 #### Client-side
-- Before hydration, `@loadable`'s `loadableReady` method is called, which makes sure that all all components that were rendered in SSR are loaded in the client before hydration
-    - loadableReady is called once per library, with the relevant namespace that was previously defined for `comps-lib`
+- Before hydration, `@loadable`'s `loadableReady` method is called, which waits for all components that were rendered in SSR to load in the browser before React hydration.
+    - `loadableReady` is called once per library, with the relevant `namespace` option
 > See [packages/host/src/client.js#L15](packages/host/src/client.js#L15)
